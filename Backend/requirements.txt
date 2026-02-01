@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+motor
+pyjwt
+google-generativeai
+python-multipart
+pydantic
+pydantic-settings
+python-dotenv
+passlib[bcrypt]
+email-validator
+pandas
+scikit-learn
+pymupdf
+aiosmtplib

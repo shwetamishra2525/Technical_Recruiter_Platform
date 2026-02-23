@@ -1,27 +1,14 @@
-from pydantic import BaseModel, Field, EmailStr
-from typing import List, Optional, Literal
+from pydantic import BaseModel, Field, EmailStr, BeforeValidator
+from typing import List, Optional, Literal, Annotated
 from datetime import datetime
 from bson import ObjectId
 
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid objectid")
-        return ObjectId(v)
-
-    @classmethod
-    def __get_pydantic_json_schema__(cls, core_schema, handler):
-        json_schema = handler(core_schema)
-        json_schema.update(type="string")
-        return json_schema
+# Create a custom type that accepts ObjectId or str and converts to str
+# This handles the breakdown where Pydantic expects str but receives ObjectId
+PyObjectId = Annotated[str, BeforeValidator(str)]
 
 class UserModel(BaseModel):
-    id: Optional[str] = Field(None, alias="_id")
+    id: Optional[PyObjectId] = Field(None, alias="_id")
     email: EmailStr
     password: str
     role: Literal["hr", "candidate"]
@@ -29,35 +16,39 @@ class UserModel(BaseModel):
 
     class Config:
         populate_by_name = True
+        arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
 class JobDescriptionModel(BaseModel):
-    id: Optional[str] = Field(None, alias="_id")
+    id: Optional[PyObjectId] = Field(None, alias="_id")
     title: str
     skills: List[str]
     requirements: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    hr_id: str # User ID of the HR who created it
+    hr_id: Optional[PyObjectId] = None # User ID of the HR who created it
 
     class Config:
         populate_by_name = True
+        arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
 class CandidateProfileModel(BaseModel):
-    id: Optional[str] = Field(None, alias="_id")
+    id: Optional[PyObjectId] = Field(None, alias="_id")
     user_id: str
     full_name: str
     resume_text: str # Parsed text
     resume_url: Optional[str] = None # Path to file if stored
     skills: List[str] = []
     experience_years: Optional[float] = 0
+    matched_jds: dict = {} # Cache of JD matches
     
     class Config:
         populate_by_name = True
+        arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
 class InterviewModel(BaseModel):
-    id: Optional[str] = Field(None, alias="_id")
+    id: Optional[PyObjectId] = Field(None, alias="_id")
     candidate_id: str
     jd_id: str
     questions: List[dict] = [] # List of {question: str, answer: str, score: int}
@@ -68,4 +59,5 @@ class InterviewModel(BaseModel):
 
     class Config:
         populate_by_name = True
+        arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}

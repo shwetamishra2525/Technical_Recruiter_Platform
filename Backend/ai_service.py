@@ -2,6 +2,8 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 import json
+import traceback
+import asyncio
 
 load_dotenv()
 
@@ -13,7 +15,22 @@ class GeminiService:
             self.model = None
         else:
             genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel('gemini-pro')
+            self.model = genai.GenerativeModel('gemini-2.5-flash')
+
+    async def _generate_with_retry(self, prompt, retries=5):
+        for attempt in range(retries):
+            try:
+                response = await self.model.generate_content_async(prompt)
+                print("response--------", response)
+                return response
+            except Exception as e:
+                # Catch 429 errors
+                if ("429" in str(e) or "Quota exceeded" in str(e)) and attempt < retries - 1:
+                    wait_time = (2 ** attempt) * 4 # 4s, 8s, 16s, 32s, 64s
+                    print(f"Quota exceeded (429). Retrying in {wait_time}s... (Attempt {attempt+1}/{retries})")
+                    await asyncio.sleep(wait_time)
+                else:
+                    raise e
 
     async def generate_interview_questions(self, resume_text: str, jd_text: str):
         prompt = f"""
@@ -29,7 +46,7 @@ class GeminiService:
         ["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"]
         """
         try:
-            response = await self.model.generate_content_async(prompt)
+            response = await self._generate_with_retry(prompt)
             text = response.text.replace('```json', '').replace('```', '').strip()
             return json.loads(text)
         except Exception as e:
@@ -56,27 +73,168 @@ class GeminiService:
         }}
         """
         try:
-            response = await self.model.generate_content_async(prompt)
+            response = await self._generate_with_retry(prompt)
             text = response.text.replace('```json', '').replace('```', '').strip()
             return json.loads(text)
         except Exception as e:
             print(f"Error evaluating answer: {e}")
             return {"score": 5, "feedback": "Could not evaluate at this time."}
 
-    async def parse_resume(self, resume_text: str):
-        """
-        Helper to extract info if needed, similar to previous logic but kept internal or separate.
-        """
+    async def evaluate_all_answers(self, qa_pairs: list):
         prompt = f"""
-        Analyze the resume text.
-        Resume: {resume_text}
-        Return JSON: {{"full_name": "Name", "skills": ["Skill1"], "experience_years": 0.0}}
+        Evaluate the following answers to the interview questions.
+        
+        Q&A Pairs:
+        {json.dumps(qa_pairs, indent=2)}
+        
+        Return exactly a JSON list of evaluations matching the order of questions. No markdown framing, just the JSON array:
+        [
+            {{
+                "score": 0,  // Integer 1-10
+                "feedback": "Overall assessment for this specific answer"
+            }},
+            ...
+        ]
         """
         try:
-            response = await self.model.generate_content_async(prompt)
+            response = await self._generate_with_retry(prompt)
             text = response.text.replace('```json', '').replace('```', '').strip()
+            if not text.startswith('['):
+                 start = text.find('[')
+                 end = text.rfind(']') + 1
+                 if start != -1 and end != -1:
+                    text = text[start:end]
             return json.loads(text)
-        except:
-            return {"full_name": "Unknown", "skills": [], "experience_years": 0}
+        except Exception as e:
+            print(f"Error evaluating all answers: {e}")
+            return [{"score": 5, "feedback": "Could not evaluate at this time."} for _ in qa_pairs]
+
+    async def parse_resume(self, resume_text: str):
+        prompt = f"""
+        Analyze the submitted text to determine if it is a valid professional resume/CV.
+        
+        Text to Analyze:
+        {resume_text[:2000]}
+        
+        If it does NOT look like a resume (e.g. random text, code, a book, data dump):
+        Return JSON: {{ "valid": false, "error": "Document does not appear to be a resume." }}
+        
+        If it IS a resume:
+        Extract the following details in JSON:
+        {{
+            "valid": true,
+            "full_name": "Candidate Name",
+            "skills": ["Skill1", "Skill2"],
+            "experience_years": 3.5
+        }}
+        """
+        try:
+            response = await self._generate_with_retry(prompt)
+            text = response.text.replace('```json', '').replace('```', '').strip()
+            
+            # Clean up potential leading/trailing characters
+            if not text.startswith('{'):
+                start = text.find('{')
+                end = text.rfind('}') + 1
+                if start != -1 and end != -1:
+                    text = text[start:end]
+            
+            data = json.loads(text)
+            
+            if not data.get("valid", True): # Default to true if missing, but prompt should catch it
+                return {"full_name": "Invalid Document", "skills": [], "experience_years": 0, "error": data.get("error")}
+                
+            return data
+            
+        except Exception as e:
+            print(f"Error parsing resume: {e}")
+            return {"full_name": "Unknown", "skills": [], "experience_years": 0, "error": str(e)}
+
+    async def parse_jd(self, jd_text: str):
+        prompt = f"""
+        Analyze the submitted text to extract job description details.
+        
+        Text to Analyze:
+        {jd_text[:3000]}
+        
+        If it does NOT look like a job description (e.g., random text, a resume, a book):
+        Return JSON: {{ "valid": false, "error": "Document does not appear to be a job description." }}
+        
+        If it IS a job description:
+        Extract the following details in JSON:
+        {{
+            "valid": true,
+            "title": "Job Title (e.g., Software Engineer)",
+            "skills": ["Skill1", "Skill2"],
+            "requirements": "A concise summary of the key requirements and responsibilities (max 3-4 sentences)."
+        }}
+        """
+        try:
+            response = await self._generate_with_retry(prompt)
+            text = response.text.replace('```json', '').replace('```', '').strip()
+            
+            if not text.startswith('{'):
+                start = text.find('{')
+                end = text.rfind('}') + 1
+                if start != -1 and end != -1:
+                    text = text[start:end]
+            
+            data = json.loads(text)
+            
+            if not data.get("valid", True): 
+                return {"title": "Invalid Document", "skills": [], "requirements": "", "error": data.get("error")}
+                
+            return data
+            
+        except Exception as e:
+            print(f"Error parsing JD: {e}")
+            return {"title": "Unknown", "skills": [], "requirements": "", "error": str(e)}
+
+    async def match_jds(self, resume_text: str, jds: list):
+        """
+        Rank JDs based on resume match.
+        jds: List of dicts with 'id', 'title', 'requirements', 'skills'
+        """
+        # Prepare JD summary for prompt
+        jds_summary = []
+        for jd in jds:
+            jds_summary.append({
+                "id": str(jd["id"]), # Ensure string ID
+                "title": jd["title"],
+                "skills": jd["skills"]
+            })
+        
+        prompt = f"""
+        You are a recruitment AI. Match the candidate's resume to the available Job Descriptions.
+        
+        Candidate Resume:
+        {resume_text[:3000]}  // Truncate if too long to save tokens
+        
+        Available Jobs:
+        {json.dumps(jds_summary, indent=2)}
+        
+        Task:
+        1. Analyze how well the resume matches each job.
+        2. Assign a "match_score" (0-100) for each job.
+        3. Return a JSON list of objects, sorted by match_score descending.
+        
+        Output format JSON ONLY:
+        [
+            {{ "id": "job_id_1", "match_score": 95, "reason": "Strong skill match..." }},
+            {{ "id": "job_id_2", "match_score": 60, "reason": "Missing React experience..." }}
+        ]
+        """
+        try:
+            response = await self._generate_with_retry(prompt)
+            text = response.text.replace('```json', '').replace('```', '').strip()
+            if not text.startswith('['):
+                 start = text.find('[')
+                 end = text.rfind(']') + 1
+                 if start != -1 and end != -1:
+                    text = text[start:end]
+            return json.loads(text)
+        except Exception as e:
+            print(f"Error matching JDs: {e}")
+            return []
 
 gemini_service = GeminiService()

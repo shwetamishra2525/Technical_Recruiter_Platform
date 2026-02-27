@@ -9,13 +9,42 @@ load_dotenv()
 
 class GeminiService:
     def __init__(self):
-        api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            print("WARNING: GEMINI_API_KEY not found. AI features will fail.")
+        # Gather all API keys starting with GEMINI_API_KEY
+        self.api_keys = []
+        for key, value in os.environ.items():
+            if key.startswith("GEMINI_API_KEY") and value:
+                self.api_keys.append(value)
+                
+        # Fallback to check .env manually if os.environ doesn't load immediately
+        if not self.api_keys:
+            key1 = os.getenv("GEMINI_API_KEY")
+            key2 = os.getenv("GEMINI_API_KEY2")
+            if key1: self.api_keys.append(key1)
+            if key2: self.api_keys.append(key2)
+
+        self.current_key_index = 0
+
+        if not self.api_keys:
+            print("WARNING: No GEMINI_API_KEY found. AI features will fail.")
             self.model = None
         else:
-            genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel('gemini-2.5-flash')
+            self._configure_current_key()
+
+    def _configure_current_key(self):
+        if not self.api_keys:
+            return
+        current_key = self.api_keys[self.current_key_index]
+        print(f"Configuring Gemini with API Key index: {self.current_key_index}")
+        genai.configure(api_key=current_key)
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
+
+    def _rotate_key(self):
+        if len(self.api_keys) > 1:
+            self.current_key_index = (self.current_key_index + 1) % len(self.api_keys)
+            print(f"Rotating API Key... Switched to key index {self.current_key_index}")
+            self._configure_current_key()
+            return True
+        return False
 
     async def _generate_with_retry(self, prompt, retries=5):
         for attempt in range(retries):
@@ -24,11 +53,24 @@ class GeminiService:
                 print("response--------", response)
                 return response
             except Exception as e:
-                # Catch 429 errors
-                if ("429" in str(e) or "Quota exceeded" in str(e)) and attempt < retries - 1:
-                    wait_time = (2 ** attempt) * 4 # 4s, 8s, 16s, 32s, 64s
-                    print(f"Quota exceeded (429). Retrying in {wait_time}s... (Attempt {attempt+1}/{retries})")
-                    await asyncio.sleep(wait_time)
+                error_msg = str(e)
+                # Catch 429 errors or Quota Exceeded
+                if "429" in error_msg or "Quota exceeded" in error_msg or "Resource has been exhausted" in error_msg:
+                    print(f"Quota exceeded (429) on key {self.current_key_index}.")
+                    # Try to rotate the key instead of just wait
+                    rotated = self._rotate_key()
+                    if rotated and attempt < retries - 1:
+                        print(f"Retrying with new key... (Attempt {attempt+1}/{retries})")
+                        # Short delay before retry with new key
+                        await asyncio.sleep(1)
+                        continue
+                    elif attempt < retries - 1:
+                        # Fallback to waiting if no other keys or rotation failed
+                        wait_time = (2 ** attempt) * 4 # 4s, 8s, 16s, 32s, 64s
+                        print(f"No more keys. Retrying in {wait_time}s... (Attempt {attempt+1}/{retries})")
+                        await asyncio.sleep(wait_time)
+                    else:
+                        raise e
                 else:
                     raise e
 

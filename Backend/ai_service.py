@@ -15,12 +15,19 @@ class GeminiService:
             if key.startswith("GEMINI_API_KEY") and value:
                 self.api_keys.append(value)
                 
-        # Fallback to check .env manually if os.environ doesn't load immediately
-        if not self.api_keys:
-            key1 = os.getenv("GEMINI_API_KEY")
-            key2 = os.getenv("GEMINI_API_KEY2")
-            if key1: self.api_keys.append(key1)
-            if key2: self.api_keys.append(key2)
+        # Ensure we capture all 6 keys explicitly from env just to be safe
+        explicit_keys = [
+            os.getenv("GEMINI_API_KEY"),
+            os.getenv("GEMINI_API_KEY2"),
+            os.getenv("GEMINI_API_KEY3"),
+            os.getenv("GEMINI_API_KEY4"),
+            os.getenv("GEMINI_API_KEY5"),
+            os.getenv("GEMINI_API_KEY6")
+        ]
+        
+        for key in explicit_keys:
+            if key and key not in self.api_keys:
+                self.api_keys.append(key)
 
         self.current_key_index = 0
 
@@ -46,7 +53,7 @@ class GeminiService:
             return True
         return False
 
-    async def _generate_with_retry(self, prompt, retries=5):
+    async def _generate_with_retry(self, prompt, retries=12): # Increased retries to cycle through all 6 keys safely
         for attempt in range(retries):
             try:
                 response = await self.model.generate_content_async(prompt)

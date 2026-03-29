@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Class Diagram</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'default',
+            class: { hideEmptyMembersBox: true }
+        });
+    </script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: white; 
+            color: black; 
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+        .diagram-container { 
+            border: 1px solid #ddd; 
+            padding: 40px; 
+            text-align: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            background-color: #fafafa;
+        }
+        h2 { color: #333; margin-bottom: 30px; }
+        .mermaid { transform: scale(1.1); }
+        
+        /* Force styling to look like classic UML boxes */
+        .classGroup rect { stroke: #333 !important; stroke-width: 1.5px !important; fill: #fff !important; }
+        .classTitle { font-weight: bold !important; font-size: 16px !important; fill: #000 !important; }
+        .nodeLabel { fill: #000 !important; }
+    </style>
+</head>
+<body>
+
+    <div class="diagram-container">
+        <h2>Technical Recruiter Platform - Class Diagram</h2>
+        <div class="mermaid">
+        classDiagram
+            %% Base Classes
+            class User {
+                -String userId
+                -String name
+                -String email
+                -String passwordHash
+                -Enum role
+                +login() String
+                +authenticateToken() Boolean
+                +logout()
+            }
+            
+            %% Derived / Associated Actors
+            class HR_Recruiter {
+                -String companyId
+                -String department
+                +createJobDescription()
+                +viewApplicants()
+                +shortlistCandidate()
+            }
+            
+            class Candidate {
+                -String candidateId
+                -List~String~ extractedSkills
+                -Float experienceYears
+                +uploadResume(File pdf)
+                +updateProfile()
+                +viewMatchScore()
+            }
+            
+            %% System Entities
+            class JobDescription {
+                -String jobId
+                -String jobTitle
+                -List~String~ requiredSkills
+                -Boolean isActive
+                +calculateMatch(Candidate) Float
+                +deactivateJob()
+            }
+            
+            class Application {
+                -String applicationId
+                -String status
+                -Float AI_MatchScore
+                +submitApplication()
+                +updateStatus()
+            }
+            
+            class InterviewSession {
+                -String interviewId
+                -DateTime startTime
+                -List~String~ dynamicQuestions
+                +startInterview()
+                +submitCodeResponse()
+                +endInterview()
+            }
+            
+            class AIEvaluation {
+                -String evalId
+                -Float finalTechnicalScore
+                -String feedbackReport
+                +gradeSubmission()
+                +saveToDatabase()
+            }
+
+            %% Relationships mapping exactly to TRP logic
+            User <|-- HR_Recruiter : Inherits
+            User <|-- Candidate : Inherits
+            
+            HR_Recruiter "1" --> "0..*" JobDescription : Creates
+            Candidate "1" --> "0..*" Application : Submits
+            JobDescription "1" --> "0..*" Application : Receives
+            
+            Application "1" --> "1" InterviewSession : Progresses To
+            InterviewSession "1" --> "1" AIEvaluation : Generates
+        </div>
+    </div>
+
+</body>
+</html>

@@ -13,6 +13,12 @@ class UserModel(BaseModel):
     password: str
     role: Literal["hr", "candidate"]
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    phone: Optional[str] = None
+    company_name: Optional[str] = None
+    photo_url: Optional[str] = None
+    gender: Optional[str] = None
+    location: Optional[str] = None
+    dob: Optional[str] = None
 
     class Config:
         populate_by_name = True

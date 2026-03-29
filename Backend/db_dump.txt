@@ -1,0 +1,40 @@
+--- Interviews ---
+Id: 69b6c635ce4110b7b4f58510, Cand: 69b6c617ce4110b7b4f5850e, JD: 6980c4c12785a05178601f2f, Status: completed
+Id: 69b6c7bdce4110b7b4f58514, Cand: 69b6c79cce4110b7b4f58512, JD: 69908eb2974962c6f113dc6e, Status: Approved
+Id: 69b6c850ce4110b7b4f58518, Cand: 69b6c82cce4110b7b4f58516, JD: 6980c4c12785a05178601f2f, Status: Approved
+Id: 69b81ca751a66028d0fb1b37, Cand: 69b81c8351a66028d0fb1b35, JD: 6980c4c12785a05178601f2f, Status: completed
+Id: 69b81ef651a66028d0fb1b3b, Cand: 69b81e9951a66028d0fb1b39, JD: 6980c4c12785a05178601f2f, Status: Approved
+Id: 69b981d75c7363689b3e42a8, Cand: 69b981b35c7363689b3e42a7, JD: 69b97ba45d95b628a7b30fb0, Status: pending
+Id: 69b981d85c7363689b3e42a9, Cand: 69b981b35c7363689b3e42a7, JD: 69b97ba45d95b628a7b30fb0, Status: pending
+Id: 69b982915c7363689b3e42ac, Cand: 69b982695c7363689b3e42ab, JD: 69b97ba45d95b628a7b30fb0, Status: pending
+Id: 69b982915c7363689b3e42ad, Cand: 69b982695c7363689b3e42ab, JD: 69b97ba45d95b628a7b30fb0, Status: completed
+Id: 69babddea13f219c44af874c, Cand: 69babda6a13f219c44af874b, JD: 69b97ba45d95b628a7b30fb0, Status: pending
+Id: 69babde3a13f219c44af874d, Cand: 69babda6a13f219c44af874b, JD: 69b97ba45d95b628a7b30fb0, Status: Approved
+
+--- Candidates ---
+Id: 6980c2f85754ef3e63836e4f, User: 6980c2be5754ef3e63836e4e, Name: Unknown
+Id: 698718b1942a003585dab862, User: 69871880942a003585dab861, Name: Shubham Mishra
+Id: 69b6c617ce4110b7b4f5850e, User: 69b6c5f8ce4110b7b4f5850d, Name: Shweta Mishra
+Id: 69b6c79cce4110b7b4f58512, User: 69b6c77dce4110b7b4f58511, Name: Shubham Mishra
+Id: 69b6c82cce4110b7b4f58516, User: 69b6c7ecce4110b7b4f58515, Name: Shweta Mishra
+Id: 69b81c8351a66028d0fb1b35, User: 69b81c6951a66028d0fb1b34, Name: Shweta Mishra
+Id: 69b81e9951a66028d0fb1b39, User: 69b81e7b51a66028d0fb1b38, Name: Shweta Mishra
+Id: 69b974b4a8f63432af7c461e, User: 69b97434a8f63432af7c461d, Name: Shubham Mishra
+Id: 69b9790f5d95b628a7b30fac, User: 69b9787b5d95b628a7b30fab, Name: Shubham Mishra
+Id: 69b97bf65d95b628a7b30fb2, User: 69b97bcc5d95b628a7b30fb1, Name: Shweta Mishra
+Id: 69b97e266842b43d7be85319, User: 69b97d475d95b628a7b30fb5, Name: Shweta Mishra
+Id: 69b981b35c7363689b3e42a7, User: 69b9818d5c7363689b3e42a6, Name: Shweta Mishra
+Id: 69b982695c7363689b3e42ab, User: 69b982445c7363689b3e42aa, Name: Shweta Mishra
+Id: 69babda6a13f219c44af874b, User: 69babd5aa13f219c44af874a, Name: Shweta Mishra
+
+--- JDs ---
+Id: 6980c4c12785a05178601f2f, Title: React devloepr, HR: 6980c1b836f92fbdba22e0c5
+Id: 69908eb2974962c6f113dc6e, Title: AI Developer, HR: 69871118de8286efc4a22b68
+Id: 6999b54fab12bf7596ce08b9, Title: Human Resources Assistant, HR: 69871118de8286efc4a22b68
+Id: 6999c35dd21a7bae9b813f92, Title: Data Analyst (Manager level), HR: 69871118de8286efc4a22b68
+Id: 699ab91900a8d9544924b268, Title: Sales Executive – Corporate Accounts, HR: 69871118de8286efc4a22b68
+Id: 69a179e55ecfae03264d57f6, Title: Human Resources Assistant, HR: 69a1794d5ecfae03264d57f4
+Id: 69b6b4cfc70a7be0edc4c276, Title: Human Resources Assistant, HR: 69871118de8286efc4a22b68
+Id: 69b6d05b7f54f4f110fd0ab9, Title: Human Resources Assistant, HR: 69871118de8286efc4a22b68
+Id: 69b978065d95b628a7b30faa, Title: Human Resources Assistant, HR: 69b82247de3a53db8d7f8c9d
+Id: 69b97ba45d95b628a7b30fb0, Title: Clinical Data Manager, HR: 69b82247de3a53db8d7f8c9d

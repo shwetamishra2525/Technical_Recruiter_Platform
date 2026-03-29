@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Technical Recruiter - Work Breakdown Structure</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            background-color: #fefefe;
+            font-family: Arial, sans-serif;
+        }
+        .mermaid {
+            transform: scale(1.1); /* make it slightly larger for better screenshots */
+        }
+    </style>
+</head>
+<body>
+
+<div class="mermaid">
+graph TD
+    %% Custom Styling matching the screenshot reference
+    classDef root fill:#4CAF50,color:white,font-weight:bold,stroke:none,font-size:20px;
+    classDef blue fill:#8C9EFF,color:black,stroke:none,font-weight:bold,font-size:16px;
+    classDef pink fill:#F8BBD0,color:black,stroke:none,font-weight:bold,font-size:16px;
+    classDef yellow fill:#FFF59D,color:black,stroke:none,font-weight:bold,font-size:16px;
+    classDef purple fill:#E1BEE7,color:black,stroke:none,font-weight:bold,font-size:16px;
+    classDef orange fill:#FFCC80,color:black,stroke:none,font-weight:bold,font-size:16px;
+    
+    %% Standard nodes with left-aligned text to mimic the small description cards
+    classDef whiteNode fill:#FFFFFF,stroke:#CCC,stroke-width:1px,color:black,text-align:left,font-size:14px;
+
+    %% ROOT
+    Root["Technical Recruiter Platform"]:::root
+    
+    %% LEVEL 1 (Sourced from your modules)
+    Reg["Module 1: Registration/Auth"]:::blue
+    Jobs["Module 2: Job Management"]:::pink
+    Resume["Module 3: Resume Parsing"]:::yellow
+    Interview["Module 4: Interview Room"]:::purple
+    Eval["Module 5: AI Evaluation"]:::orange
+
+    Root --- Reg
+    Root --- Jobs
+    Root --- Resume
+    Root --- Interview
+    Root --- Eval
+
+    %% REGISTRATION BRANCH
+    Reg --- HR["HR User Profile<br/><span style='font-size:12px;color:#555'>Manage recruiter details</span>"]:::whiteNode
+    HR --- HR_Login["Secure Login<br/><span style='font-size:12px;color:#555'>Authentication & Session</span>"]:::whiteNode
+
+    Reg --- Cand["Candidate Profile<br/><span style='font-size:12px;color:#555'>Manage applicant details</span>"]:::whiteNode
+    Cand --- Cand_Login["Sign Up & Login<br/><span style='font-size:12px;color:#555'>Portal access</span>"]:::whiteNode
+
+    %% JOB MANAGEMENT BRANCH
+    Jobs --- CreateJD["Create Job Specs<br/><span style='font-size:12px;color:#555'>Define skills & experience</span>"]:::whiteNode
+    Jobs --- ViewApps["Candidate Pipeline<br/><span style='font-size:12px;color:#555'>List incoming applicants</span>"]:::whiteNode
+    ViewApps --- Rank["Rank Applicants<br/><span style='font-size:12px;color:#555'>Sort by Match Score</span>"]:::whiteNode
+
+    %% RESUME PARSING BRANCH
+    Resume --- Upload["Upload Resume<br/><span style='font-size:12px;color:#555'>Accept PDF documents</span>"]:::whiteNode
+    Upload --- Parse["Text Extraction<br/><span style='font-size:12px;color:#555'>Read raw characters</span>"]:::whiteNode
+    Parse --- NLP["AI Keyword Match<br/><span style='font-size:12px;color:#555'>Extract structured skills</span>"]:::whiteNode
+    
+    %% INTERVIEW ROOM BRANCH
+    Interview --- Gen["Dynamic Questions<br/><span style='font-size:12px;color:#555'>Tailored to JD skills</span>"]:::whiteNode
+    Interview --- Env["Timed Environment<br/><span style='font-size:12px;color:#555'>Secure interface timer</span>"]:::whiteNode
+    Env --- Submit["Submit Responses<br/><span style='font-size:12px;color:#555'>Log text & code answers</span>"]:::whiteNode
+
+    %% EVALUATION BRANCH
+    Eval --- Check["AI Answer Grading<br/><span style='font-size:12px;color:#555'>Assess correctness</span>"]:::whiteNode
+    Check --- Score["Calculate Score<br/><span style='font-size:12px;color:#555'>Generate final percentage</span>"]:::whiteNode
+    Score --- Report["Feedback Report<br/><span style='font-size:12px;color:#555'>Constructive AI feedback</span>"]:::whiteNode
+
+</div>
+
+</body>
+</html>

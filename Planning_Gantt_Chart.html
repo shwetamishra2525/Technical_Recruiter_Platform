@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Planning Gantt Chart</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+        }
+        .gantt-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            max-width: 1000px;
+            width: 100%;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 18px 10px;
+            text-align: center;
+            color: #333;
+            font-size: 14px;
+        }
+        th {
+            font-weight: 600;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .phase-col {
+            text-align: left;
+            font-weight: 500;
+            width: 25%;
+            color: #555;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        td:not(.phase-col) {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .black-block {
+            background-color: #111;
+            height: 18px;
+            width: 80%;
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="gantt-container">
+    <h2>Planning Gantt Chart:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th class="phase-col">Phase</th>
+                <th>Month 1<br><span style="font-size:11px; font-weight:normal; color:#888;">(Aug)</span></th>
+                <th>Month 2<br><span style="font-size:11px; font-weight:normal; color:#888;">(Sep)</span></th>
+                <th>Month 3<br><span style="font-size:11px; font-weight:normal; color:#888;">(Oct)</span></th>
+                <th>Month 4<br><span style="font-size:11px; font-weight:normal; color:#888;">(Nov)</span></th>
+                <th>Month 5<br><span style="font-size:11px; font-weight:normal; color:#888;">(Dec)</span></th>
+                <th>Month 6<br><span style="font-size:11px; font-weight:normal; color:#888;">(Jan)</span></th>
+                <th>Month 7<br><span style="font-size:11px; font-weight:normal; color:#888;">(Feb)</span></th>
+                <th>Month 8<br><span style="font-size:11px; font-weight:normal; color:#888;">(Mar)</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="phase-col">Requirement Gathering</td>
+                <td><div class="black-block"></div></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="phase-col">Analysis & Design</td>
+                <td><div class="black-block"></div></td>
+                <td><div class="black-block"></div></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="phase-col">Development Phase 1</td>
+                <td></td>
+                <td></td>
+                <td><div class="black-block"></div></td>
+                <td><div class="black-block"></div></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="phase-col">Development Phase 2</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><div class="black-block"></div></td>
+                <td><div class="black-block"></div></td>
+                <td><div class="black-block"></div></td>
+                <td><div class="black-block"></div></td>
+            </tr>
+            <tr>
+                <td class="phase-col">Testing & Debugging</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><div class="black-block"></div></td>
+            </tr>
+            <tr>
+                <td class="phase-col">Finalization & Report</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><div class="black-block"></div></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

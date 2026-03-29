@@ -6,7 +6,7 @@ load_dotenv()
 
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
-    # Try reading from .env file directly if os.getenv fails
+    
     with open(".env", "r") as f:
         for line in f:
             if line.startswith("GEMINI_API_KEY="):

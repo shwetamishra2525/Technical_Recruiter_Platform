@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sequence Diagrams</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'default',
+            sequence: {
+                messageAlign: 'left',
+                actorMargin: 80,
+            }
+        });
+    </script>
+    <style>
+        body { 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            background-color: #fefefe;
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+        .diagram-container {
+            margin-bottom: 80px;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 20px;}
+        .mermaid {
+            transform: scale(1.05); /* Zoom slightly */
+            transform-origin: top center;
+        }
+        /* Style fixes to match standard UML like the screenshot */
+        .actor { stroke: #000 !important; stroke-width: 1.5px !important; fill: white !important;}
+        text.actor > tspan { fill: black !important; font-weight: bold; }
+        line.loopLine { stroke: black !important; }
+        .messageLine0, .messageLine1 { stroke: black !important; stroke-width: 1.5px !important; }
+        #arrowhead path { fill: black !important; stroke: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="diagram-container">
+    <h2>sd Login and Signup SD</h2>
+    <div class="mermaid">
+    sequenceDiagram
+        participant U as User
+        participant F as React Frontend Page
+        participant B as FastAPI Backend
+        participant DB as MongoDB
+        
+        U->>F: 1 : Enter Details
+        activate F
+        F->>B: 2 : Submit Login or Signup Details
+        activate B
+        B->>DB: 3 : saveUser / findUser
+        activate DB
+        DB-->>B: 4 : Details Verified / Saved
+        deactivate DB
+        B-->>F: 5 : Success Auth Token
+        deactivate B
+        F-->>U: 6 : redirectToDashboard
+        deactivate F
+    </div>
+</div>
+
+<div class="diagram-container">
+    <h2>sd Candidate Interview Evaluation SD</h2>
+    <div class="mermaid">
+    sequenceDiagram
+        participant C as Candidate
+        participant F as Interview Room Page
+        participant B as FastAPI Backend
+        participant AI as AI Engine
+        participant DB as MongoDB
+        
+        C->>F: 1 : Request Interview Questions
+        activate F
+        F->>B: 2 : fetchQuestions()
+        activate B
+        B->>DB: 3 : getJobDescription()
+        activate DB
+        DB-->>B: 4 : return JD Skills
+        deactivate DB
+        B->>AI: 5 : generateQuestions(JD Skills)
+        activate AI
+        AI-->>B: 6 : Return Question Array
+        deactivate AI
+        B-->>F: 7 : displayQuestions
+        deactivate B
+        
+        C->>F: 8 : Submit Typed & Code Answers
+        F->>B: 9 : evaluateAnswers(Answers)
+        activate B
+        B->>AI: 10 : evaluate(Answers, JD Skills)
+        activate AI
+        AI-->>B: 11 : Technical Score & Feedback
+        deactivate AI
+        B->>DB: 12 : saveInterviewRecord()
+        activate DB
+        DB-->>B: 13 : Record Saved
+        deactivate DB
+        B-->>F: 14 : return Results
+        deactivate B
+        F-->>C: 15 : showScoreConfirmation
+        deactivate F
+    </div>
+</div>
+
+<div class="diagram-container">
+    <h2>sd HR Post Job SD</h2>
+    <div class="mermaid">
+    sequenceDiagram
+        participant HR as HR Recruiter
+        participant F as HR Dashboard
+        participant B as FastAPI Backend
+        participant DB as MongoDB Database
+        
+        HR->>F: 1 : Enter JD Details & Skills
+        activate F
+        F->>B: 2 : submitJobDesc()
+        activate B
+        B->>DB: 3 : storeJD()
+        activate DB
+        DB-->>B: 4 : successStored
+        deactivate DB
+        B-->>F: 5 : HTTP 201 Created
+        deactivate B
+        F-->>HR: 6 : showSuccessMessage & Update List
+        deactivate F
+    </div>
+</div>
+
+</body>
+</html>

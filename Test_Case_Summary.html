@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Case Summary</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: #fdfdfd; 
+            padding: 50px; 
+            display: flex;
+            justify-content: center;
+        }
+        .table-container { 
+            background: white; 
+            border: 1px solid #efefef; 
+            border-radius: 12px; 
+            box-shadow: 0 6px 24px rgba(0,0,0,0.04); 
+            width: 100%;
+            max-width: 1000px;
+            overflow: hidden;
+            padding: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 22px 30px;
+            font-size: 14.5px;
+            color: #333;
+        }
+        th {
+            font-weight: 600;
+            color: #111;
+            font-size: 15px;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 18px;
+        }
+        td {
+            border-bottom: 1px solid #f6f6f6;
+            color: #444;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .status-pass {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        .check {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 20px;
+            height: 20px;
+            background-color: #55d070;
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Test Case</th>
+                    <th>Expected Result</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Login with valid HR JWT credentials</td>
+                    <td>Redirect dynamically to HR Dashboard</td>
+                    <td><div class="status-pass"><div class="check">✓</div> Pass</div></td>
+                </tr>
+                <tr>
+                    <td>Enforce RBAC protection on secured routes</td>
+                    <td>Unauthorized users instantly kicked back to login</td>
+                    <td><div class="status-pass"><div class="check">✓</div> Pass</div></td>
+                </tr>
+                <tr>
+                    <td>Prevent publishing incomplete Job Postings</td>
+                    <td>Validation error strictly shown in UI prior to API call</td>
+                    <td><div class="status-pass"><div class="check">✓</div> Pass</div></td>
+                </tr>
+                <tr>
+                    <td>Reject unsupported resume binary file types</td>
+                    <td>Invalid upload blocked, explicit error toast rendered</td>
+                    <td><div class="status-pass"><div class="check">✓</div> Pass</div></td>
+                </tr>
+                <tr>
+                    <td>Execute AI NLP Extraction on uploaded PDF</td>
+                    <td>Structured JSON dictionary strictly updates MongoDB</td>
+                    <td><div class="status-pass"><div class="check">✓</div> Pass</div></td>
+                </tr>
+                <tr>
+                    <td>Algorithmic Candidate Compatibility Matching</td>
+                    <td>Percentage match dynamically calculated via set intersection</td>
+                    <td><div class="status-pass"><div class="check">✓</div> Pass</div></td>
+                </tr>
+                <tr>
+                    <td>Dynamic Generator constructs Logic Problem</td>
+                    <td>Contextual markdown problem visually loads into IDE safely</td>
+                    <td><div class="status-pass"><div class="check">✓</div> Pass</div></td>
+                </tr>
+                <tr>
+                    <td>Transmit Candidate Code submission payload</td>
+                    <td>Execution payload safely written to Database Interview room</td>
+                    <td><div class="status-pass"><div class="check">✓</div> Pass</div></td>
+                </tr>
+                <tr>
+                    <td>AI Auto-Grader syntax evaluation execution</td>
+                    <td>Returns precise 0-100 score alongside qualitative strengths arrays</td>
+                    <td><div class="status-pass"><div class="check">✓</div> Pass</div></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

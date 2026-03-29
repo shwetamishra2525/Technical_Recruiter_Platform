@@ -37,6 +37,146 @@ async def login(login_data: dict):
     access_token = create_access_token(data={"sub": user["email"], "role": user["role"], "id": str(user["_id"])})
     return {"access_token": access_token, "token_type": "bearer", "role": user["role"]}
 
+# --- User Profile Routes ---
+@router.get("/user/profile-status")
+async def get_user_profile_status(current_user: dict = Depends(get_current_user)):
+    user = await users_collection.find_one({"_id": ObjectId(current_user["id"])})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    if current_user["role"] == "hr":
+        completion = 20
+        missing = []
+        if user.get("company_name"):
+            completion += 40
+        else:
+            missing.append("company_name")
+            
+        if user.get("phone"):
+            completion += 40
+        else:
+            missing.append("phone")
+            
+        return {
+            "role": "hr", 
+            "completion_percentage": completion, 
+            "missing_fields": missing, 
+            "user_details": {
+                "company_name": user.get("company_name", ""), 
+                "phone": user.get("phone", ""),
+                "photo_url": user.get("photo_url", "")
+            }
+        }
+    else:
+        # Candidate
+        completion = 20
+        candidate = await candidates_collection.find_one({"user_id": current_user["id"]})
+        if candidate and candidate.get("resume_text"):
+            completion += 80
+            
+        return {
+            "role": "candidate", 
+            "completion_percentage": completion,
+            "user_details": {
+                "photo_url": user.get("photo_url", "")
+            }
+        }
+
+@router.post("/user/update-profile")
+async def update_user_profile(profile_data: dict, current_user: dict = Depends(get_current_user)):
+    update_fields = {}
+    for field in ["company_name", "phone", "gender", "location", "dob"]:
+        if field in profile_data:
+            update_fields[field] = profile_data[field]
+        
+    if update_fields:
+        await users_collection.update_one(
+            {"_id": ObjectId(current_user["id"])},
+            {"$set": update_fields}
+        )
+    return {"message": "Profile updated successfully"}
+
+@router.post("/user/upload-photo")
+async def upload_user_photo(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    import shutil
+    import os
+    os.makedirs("uploads", exist_ok=True)
+    
+    file_extension = file.filename.split(".")[-1]
+    filename = f"{current_user['id']}_profile.{file_extension}"
+    file_location = f"uploads/{filename}"
+    
+    with open(file_location, "wb+") as file_object:
+        shutil.copyfileobj(file.file, file_object)
+        
+    photo_url = f"http://localhost:8000/uploads/{filename}"
+    await users_collection.update_one(
+        {"_id": ObjectId(current_user["id"])},
+        {"$set": {"photo_url": photo_url}}
+    )
+    return {"photo_url": photo_url}
+
+@router.get("/user/profile")
+async def get_full_user_profile(current_user: dict = Depends(get_current_user)):
+    user = await users_collection.find_one({"_id": ObjectId(current_user["id"])})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    # Calculate completion percentage
+    fields_to_check = ["phone", "gender", "location", "dob", "photo_url"]
+    if current_user["role"] == "hr":
+        fields_to_check.append("company_name")
+        
+    filled_fields = sum(1 for field in fields_to_check if user.get(field))
+    
+    # Base 20% + 80% distributed among fields
+    field_weight = 80 / len(fields_to_check)
+    completion = 20 + (filled_fields * field_weight)
+    
+    # Fetch History
+    history = []
+    import pymongo
+    if current_user["role"] == "candidate":
+        candidate = await candidates_collection.find_one({"user_id": current_user["id"]})
+        if candidate:
+            interviews = interviews_collection.find({"candidate_id": str(candidate["_id"])}).sort("created_at", pymongo.DESCENDING)
+            async for iv in interviews:
+                jd = await jds_collection.find_one({"_id": ObjectId(iv["jd_id"])})
+                history.append({
+                    "id": str(iv["_id"]),
+                    "title": jd["title"] if jd else "Unknown Role",
+                    "status": iv.get("status", "pending"),
+                    "score": round(iv.get("total_score", 0), 1),
+                    "date": iv.get("created_at")
+                })
+    else:
+        # HR history
+        jds = jds_collection.find({"hr_id": current_user["id"]}).sort("created_at", pymongo.DESCENDING)
+        async for jd in jds:
+            applicant_count = await interviews_collection.count_documents({"jd_id": str(jd["_id"])})
+            history.append({
+                "id": str(jd["_id"]),
+                "title": jd["title"],
+                "applicants": applicant_count,
+                "date": jd.get("created_at")
+            })
+            
+    return {
+        "user": {
+            "email": user.get("email"),
+            "role": user.get("role"),
+            "phone": user.get("phone", ""),
+            "company_name": user.get("company_name", ""),
+            "photo_url": user.get("photo_url", ""),
+            "gender": user.get("gender", ""),
+            "location": user.get("location", ""),
+            "dob": user.get("dob", ""),
+            "created_at": user.get("created_at")
+        },
+        "completion_percentage": min(100, round(completion)),
+        "history": history
+    }
+
 # --- HR Routes ---
 @router.post("/hr/create-jd", response_model=JobDescriptionModel)
 async def create_jd(jd: JobDescriptionModel, current_user: dict = Depends(get_current_user)):
@@ -72,10 +212,16 @@ async def upload_jd(
     
     text_content = ""
     try:
-        if file.filename.endswith(".pdf"):
+        filename_lower = file.filename.lower()
+        if filename_lower.endswith(".pdf"):
             with fitz.open(stream=content, filetype="pdf") as doc:
                 for page in doc:
                     text_content += page.get_text()
+        elif filename_lower.endswith(".docx"):
+            import docx
+            import io
+            document = docx.Document(io.BytesIO(content))
+            text_content = "\n".join([para.text for para in document.paragraphs])
         else:
             text_content = content.decode("utf-8", errors="ignore")
     except Exception as e:
@@ -85,6 +231,7 @@ async def upload_jd(
     if len(text_content.strip()) < 20:
          raise HTTPException(status_code=400, detail="Document content is too short or unreadable.")
 
+    print("DEBUG EXTRACTED JD TEXT:", repr(text_content[:500]))
     parsed_data = await gemini_service.parse_jd(text_content)
     
     if parsed_data.get("title") == "Invalid Document" or parsed_data.get("title") == "Unknown":
@@ -107,30 +254,15 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     if current_user["role"] != "hr":
         raise HTTPException(status_code=403, detail="Unauthorized")
     
-    total_candidates = await candidates_collection.count_documents({})
-    pending_reviews = await interviews_collection.count_documents({"status": "pending"})
+    import pymongo
     
-    candidates_cursor = candidates_collection.find().limit(20)
-    candidates_list = []
-    async for cand in candidates_cursor:
-        # Get latest interview
-        import pymongo
-        interview = await interviews_collection.find_one(
-            {"candidate_id": str(cand["_id"])},
-            sort=[("created_at", pymongo.DESCENDING)]
-        )
-        score = interview["total_score"] if interview else 0
-        candidates_list.append({
-            "id": str(cand["_id"]),
-            "name": cand["full_name"],
-            "role": "Applicant",
-            "score": score,
-            "status": interview["status"] if interview else "New"
-        })
-        
-    jds_cursor = jds_collection.find({"hr_id": current_user["id"]}).sort("created_at", -1)
+    # 1. Fetch JDs created by this HR first
+    jds_cursor = jds_collection.find({"hr_id": current_user["id"]}).sort("created_at", pymongo.DESCENDING)
     jds_list = []
+    hr_jd_ids = []
+    
     async for jd in jds_cursor:
+        hr_jd_ids.append(str(jd["_id"]))
         jds_list.append({
             "id": str(jd["_id"]),
             "title": jd["title"],
@@ -138,13 +270,61 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
             "requirements": jd["requirements"],
             "created_at": jd.get("created_at")
         })
+    
+    # 2. Filter query for interviews
+    interview_query = {"jd_id": {"$in": hr_jd_ids}}
+
+    # (We calculate KPIs inside the loop below to ensure deduplication matches the GUI)
+
+    # 4. Interviews (Listing ONLY applications for this HR's JDs)
+    interviews_cursor = interviews_collection.find(interview_query).sort("created_at", pymongo.DESCENDING).limit(500)
+    applications_list = []
+    seen_applications = set() # candidate_id + jd_id
+    
+    unique_total = 0
+    unique_ready = 0
+    unique_finished = 0
+    
+    async for interview in interviews_cursor:
+        candidate_id = str(interview.get("candidate_id", ""))
+        jd_id = str(interview.get("jd_id", ""))
+        unique_key = f"{candidate_id}_{jd_id}"
+        
+        # Keep only the newest submission for a given candidate-job pair
+        if unique_key in seen_applications:
+            continue
+        seen_applications.add(unique_key)
+        
+        # Calculate deduplicated KPIs
+        unique_total += 1
+        status = interview.get("status", "New")
+        if status == "completed":
+            unique_ready += 1
+        elif status in ["Approved", "Reject"]:
+            unique_finished += 1
+        
+        candidate = await candidates_collection.find_one({"_id": ObjectId(interview["candidate_id"])})
+        jd = await jds_collection.find_one({"_id": ObjectId(interview["jd_id"])})
+        
+        applications_list.append({
+            "id": str(interview["_id"]), # Navigation now happens via interview_id
+            "candidate_id": str(candidate["_id"]) if candidate else None,
+            "name": candidate.get("full_name") if candidate else "Deleted Candidate",
+            "role": jd.get("title") if jd else "General Applicant",
+            "score": interview.get("total_score", 0),
+            "status": status,
+            "created_at": interview.get("created_at")
+        })
+        
+    completion_rate = round((unique_finished / unique_total * 100), 1) if unique_total > 0 else 0
         
     return {
         "stats": {
-            "total_applicants": total_candidates,
-            "pending_reviews": pending_reviews
+            "total_applicants": unique_total, # Renamed logically in response but frontend will map it
+            "pending_reviews": unique_ready,
+            "completion_rate": f"{completion_rate}% ({unique_finished}/{unique_total})"
         },
-        "candidates": candidates_list,
+        "candidates": applications_list, # Kept key 'candidates' for frontend compatibility but content is interviews
         "jds": jds_list
     }
 
@@ -159,72 +339,114 @@ async def delete_jd(jd_id: str, current_user: dict = Depends(get_current_user)):
         
     return {"message": "Job description deleted successfully"}
 
-@router.post("/hr/update-status/{candidate_id}")
-async def update_candidate_status(candidate_id: str, status_data: dict, current_user: dict = Depends(get_current_user)):
+@router.post("/hr/update-status/{interview_id}")
+async def update_interview_status(interview_id: str, status_data: dict, current_user: dict = Depends(get_current_user)):
     if current_user["role"] != "hr":
         raise HTTPException(status_code=403, detail="Unauthorized")
     
     new_status = status_data.get("status")
-    
-    candidate = await candidates_collection.find_one({"_id": ObjectId(candidate_id)})
-    if not candidate:
-        raise HTTPException(status_code=404, detail="Candidate not found")
+    interview = await interviews_collection.find_one({"_id": ObjectId(interview_id)})
+    if not interview:
+        raise HTTPException(status_code=404, detail="Interview session not found")
         
-    # Update Interview Status in DB
-    import pymongo
-    latest_interview = await interviews_collection.find_one(
-        {"candidate_id": candidate_id},
-        sort=[("created_at", pymongo.DESCENDING)]
-    )
-    
-    if latest_interview:
-        await interviews_collection.update_one(
-            {"_id": latest_interview["_id"]},
-            {"$set": {"status": new_status}}
-        )
-    else:
-        # Fallback or error if no interview exists
-        pass 
+    candidate = await candidates_collection.find_one({"_id": ObjectId(interview["candidate_id"])})
+    if not candidate:
+         raise HTTPException(status_code=404, detail="Candidate record not found")
 
-    # Send Email
+    # Update this specific session
+    await interviews_collection.update_one(
+        {"_id": ObjectId(interview_id)},
+        {"$set": {"status": new_status}}
+    )
+
+    # Send Email to Candidate
     user = await users_collection.find_one({"_id": ObjectId(candidate["user_id"])})
     if user:
         await send_status_email(user["email"], new_status, candidate["full_name"])
     
-    return {"message": f"Candidate {new_status} and email sent."}
+    return {"message": f"Application {new_status} and email sent."}
 
-@router.get("/hr/candidate/{candidate_id}")
-async def get_candidate_details(candidate_id: str, current_user: dict = Depends(get_current_user)):
+@router.get("/hr/interview/{interview_id}")
+async def get_interview_details(interview_id: str, current_user: dict = Depends(get_current_user)):
     if current_user["role"] != "hr":
         raise HTTPException(status_code=403, detail="Unauthorized")
     
-    candidate = await candidates_collection.find_one({"_id": ObjectId(candidate_id)})
-    if not candidate:
-        raise HTTPException(status_code=404, detail="Candidate not found")
+    interview = await interviews_collection.find_one({"_id": ObjectId(interview_id)})
+    if not interview:
+        raise HTTPException(status_code=404, detail="Interview session not found")
         
-    # Get latest interview
-    import pymongo
-    interview = await interviews_collection.find_one(
-        {"candidate_id": candidate_id},
-        sort=[("created_at", pymongo.DESCENDING)]
-    )
+    candidate = await candidates_collection.find_one({"_id": ObjectId(interview["candidate_id"])})
+    if not candidate:
+         raise HTTPException(status_code=404, detail="Candidate record not found")
     
     return {
         "profile": {
             "full_name": candidate.get("full_name"),
-            "email": candidate.get("email"), # Note: email might be in user collection, but let's check
+            "email": candidate.get("email"),
             "skills": candidate.get("skills"),
             "experience_years": candidate.get("experience_years"),
             "resume_text": candidate.get("resume_text")[:500] + "..." if candidate.get("resume_text") else ""
         },
         "interview": {
+            "id": str(interview["_id"]),
             "status": interview.get("status") if interview else "Not Started",
             "total_score": interview.get("total_score") if interview else 0,
             "questions": interview.get("questions", []) if interview else []
         }
     }
 
+@router.get("/candidate/profile")
+async def get_candidate_profile(current_user: dict = Depends(get_current_user)):
+    if current_user["role"] != "candidate":
+        raise HTTPException(status_code=403, detail="Only candidates can access this")
+    
+    candidate = await candidates_collection.find_one({"user_id": current_user["id"]})
+    if not candidate:
+        return {"profile": None, "application_status": None}
+    
+    # Check status
+    import pymongo
+    latest_interview = await interviews_collection.find_one(
+        {"candidate_id": str(candidate["_id"])},
+        sort=[("created_at", pymongo.DESCENDING)]
+    )
+    
+    return {
+        "profile": {
+            "full_name": candidate.get("full_name"),
+            "skills": candidate.get("skills"),
+            "experience_years": candidate.get("experience_years")
+        },
+        "application_status": latest_interview.get("status") if latest_interview else None
+    }
+
 # --- Candidate Routes ---
+
+async def check_application_status(user_id: str):
+    """
+    Checks the status of the latest interview for a user.
+    Returns an error message if they are blocked from applying.
+    """
+    candidate = await candidates_collection.find_one({"user_id": user_id})
+    if not candidate:
+        return None # No candidate profile yet, can upload
+    
+    import pymongo
+    latest_interview = await interviews_collection.find_one(
+        {"candidate_id": str(candidate["_id"])},
+        sort=[("created_at", pymongo.DESCENDING)]
+    )
+    
+    if not latest_interview:
+        return None # No interview started yet, can upload or start
+    
+    status = latest_interview.get("status")
+    if status == "Approved":
+        return "User is already approved. You cannot apply again."
+    elif status == "completed":
+        return "Waiting for response. You have an active application under review."
+    
+    return None # Rejected or New? Let them re-apply for now.
 
 @router.post("/candidate/upload-resume")
 async def upload_resume(
@@ -234,16 +456,27 @@ async def upload_resume(
     if current_user["role"] != "candidate":
         raise HTTPException(status_code=403, detail="Only candidates can upload resumes")
     
+    # Check if they are allowed to apply
+    status_msg = await check_application_status(current_user["id"])
+    if status_msg:
+        raise HTTPException(status_code=403, detail=status_msg)
+    
     # Read file content
     content = await file.read()
     
-    # Extract text using PyMuPDF (fitz)
+    # Extract text using PyMuPDF (fitz) or docx
     text_content = ""
     try:
-        if file.filename.endswith(".pdf"):
+        filename_lower = file.filename.lower()
+        if filename_lower.endswith(".pdf"):
             with fitz.open(stream=content, filetype="pdf") as doc:
                 for page in doc:
                     text_content += page.get_text()
+        elif filename_lower.endswith(".docx"):
+            import docx
+            import io
+            document = docx.Document(io.BytesIO(content))
+            text_content = "\n".join([para.text for para in document.paragraphs])
         else:
             text_content = content.decode("utf-8", errors="ignore")
     except Exception as e:
@@ -304,7 +537,7 @@ async def get_all_jobs(current_user: dict = Depends(get_current_user)):
         for seen in seen_titles:
             # Check similarity ratio (e.g. "react developer" vs "react devloepr")
             similarity = SequenceMatcher(None, lower_title, seen).ratio()
-            if similarity > 0.85:
+            if similarity > 0.95:
                 is_duplicate = True
                 break
                 
@@ -359,13 +592,35 @@ async def get_all_jobs(current_user: dict = Depends(get_current_user)):
 
 @router.post("/candidate/start-interview/{jd_id}")
 async def start_interview(jd_id: str, current_user: dict = Depends(get_current_user)):
-    candidate = await candidates_collection.find_one({"user_id": current_user["id"]})
+    # Check if they are allowed to apply
+    status_msg = await check_application_status(current_user["id"])
+    if status_msg:
+        raise HTTPException(status_code=403, detail=status_msg)
+
+    candidate = await candidates_collection.find_one({"_id": current_user["id"]}) # wait it's user_id or _id, let's fix the query to find by user_id
+    if not candidate:
+        candidate = await candidates_collection.find_one({"user_id": current_user["id"]})
+        
     if not candidate:
         raise HTTPException(status_code=400, detail="Please upload resume first")
         
     jd = await jds_collection.find_one({"_id": ObjectId(jd_id)})
     if not jd:
         raise HTTPException(status_code=404, detail="Job not found")
+        
+    # Check if they ALREADY have an interview for this exact JD
+    import pymongo
+    existing_interview = await interviews_collection.find_one(
+        {"candidate_id": str(candidate["_id"]), "jd_id": jd_id},
+        sort=[("created_at", pymongo.DESCENDING)]
+    )
+    
+    if existing_interview:
+        if existing_interview.get("status") in ["Approved", "Reject", "completed"]:
+            raise HTTPException(status_code=400, detail="You have already completed the application for this role.")
+        else:
+            # It's pending, let them resume it instead of creating a duplicate
+            return {"interview_id": str(existing_interview["_id"]), "questions": existing_interview.get("questions", [])}
         
     # Generate Questions
     questions = await gemini_service.generate_interview_questions(candidate["resume_text"], jd["requirements"])

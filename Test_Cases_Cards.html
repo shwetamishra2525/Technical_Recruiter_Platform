@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Test Cases</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: #fdfdfd; 
+            padding: 40px; 
+            color: #333;
+        }
+        .container { 
+            max-width: 850px; 
+            margin: 0 auto; 
+        }
+        .tc-title { 
+            display: flex; 
+            align-items: center; 
+            font-size: 22px; 
+            font-weight: bold; 
+            margin-top: 50px; 
+            margin-bottom: 20px; 
+            color: #111; 
+        }
+        .tc-title span.icon {
+            color: #2F64C1;
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        .tc-card { 
+            background: white; 
+            border: 1px solid #eef0f2; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+            padding: 0 35px; 
+        }
+        .tc-row { 
+            display: flex; 
+            padding: 20px 0; 
+            border-bottom: 1px solid #f1f1f1; 
+        }
+        .tc-row:last-child { 
+            border-bottom: none; 
+        }
+        .tc-label { 
+            flex: 0 0 180px; 
+            font-weight: 500; 
+            color: #444; 
+            font-size: 15px; 
+        }
+        .tc-value { 
+            flex: 1; 
+            font-size: 15px; 
+            color: #222; 
+            line-height: 1.6; 
+        }
+        ol { 
+            margin: 0; 
+            padding-left: 20px; 
+        }
+        li {
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- TC 1 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 1 – HR Login & Authentication</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_Auth_01</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">Security & Authentication</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify successful JWT login with valid HR Recruiter credentials</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>Navigate to the login page</li>
+                    <li>Enter valid HR email and password</li>
+                    <li>Click the Login button</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">API returns 200 OK. User is redirected dynamically to the HR Dashboard.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+    <!-- TC 2 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 2 – Role-Based API Route Protection</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_Auth_02</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">Security & Authentication</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify that a Candidate Role cannot access secure HR routes</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>Login manually with Candidate credentials</li>
+                    <li>Change the URL address bar strictly to `/hr-dashboard`</li>
+                    <li>Press Enter to attempt forceful navigation</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">React Router detects the mismatch and actively kicks the user back to the unauthorized portal.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+    <!-- TC 3 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 3 – Job Description Validation Handling</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_Job_01</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">HR Applicant Tracking System</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify that the Job Creation form securely rejects incomplete payloads</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>HR navigates to Job Creation</li>
+                    <li>Fills out "Job Title" but leaves "Mandatory Skills" array empty</li>
+                    <li>Click Publish Job</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">Frontend displays UI error. Backend strictly rejects the POST with a 422 Unprocessable Entity block.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+    <!-- TC 4 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 4 – Candidate Resume Upload (Invalid Types)</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_Resume_01</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">Candidate Portfolio</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify system firmly rejects unsupported binary file types during upload</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>Candidate navigates to their UI Profile</li>
+                    <li>Selects a `.docx` or `.jpg` file instead of `.pdf`</li>
+                    <li>Click on "Upload & Parse Resume"</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">UI immediately blocks the execution, displaying a Red Error Toast for unsupported media type.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+    <!-- TC 5 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 5 – Generative AI NLP Skill Extraction</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_Resume_02</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">Candidate Portfolio & Generative AI</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify the LLM correctly parses an unstructured PDF into strict Database JSON</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>Candidate uploads a valid standard PDF Resume</li>
+                    <li>System executes server-side base64 text extraction</li>
+                    <li>Payloads sent securely to the Generative AI engine</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">The AI isolates coding languages natively, returning a structured JSON Object updating MongoDB.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+    <!-- TC 6 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 6 – Algorithmic Applicant Ranking Calculation</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_ATS_01</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">HR Applicant Tracking System</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify the set-intersection math calculation assigns the proper percentage match score</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>Job strictly requires: ["Python", "React", "Docker", "AWS"]</li>
+                    <li>Candidate Database object possesses: ["Python", "React"]</li>
+                    <li>Candidate triggers application pipeline</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">Backend executes intersection logic (2 out of 4). Algorithm returns 50.0% Match Score dynamically.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+    <!-- TC 7 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 7 – Dynamic AI Question Initialization</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_Interview_01</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">Live AI Evaluation & Interview</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify the AI dynamically constructs an executable logic problem based on explicit job context</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>Candidate enters active Interview Room assigned for Python/React</li>
+                    <li>Backend requests logic generation from AI based on {"skills": ["Python"]}</li>
+                    <li>Secure room locks and displays the payload</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">AI generates an untraceable original logic problem themed entirely around Python backend framework constraints.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+    <!-- TC 8 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 8 – Live Code Execution Submission</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_Interview_02</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">Live AI Evaluation & Interview</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify the candidate can securely transmit their typed code payload to the storage network</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>Candidate writes logic sequence inside the standard code editor Component</li>
+                    <li>Candidate actively clicks "Submit Answer" button before countdown hits zero</li>
+                    <li>System isolates websocket connection instantly</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">Raw string payload of syntax is saved securely. User is locked out of the room to explicitly prevent any duplicate submissions.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+    <!-- TC 9 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 9 – Automated Syntax Assessment Algorithm</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_Eval_01</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">Live AI Evaluation & Interview</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify the Generative AI Auto-grader correctly judges a Python algorithm for compilation accuracy</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>Auto-grader receives original statement and Target syntax</li>
+                    <li>LLM strictly adopts 'Expert Reviewer' system prompt instructions</li>
+                    <li>Algorithm evaluates accuracy, logic, formatting, and Big-O efficiency</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">Returns a strict JSON matrix containing a rigid Technical Score (between 0-100) and actionable string-arrays containing Strengths and Weaknesses.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+    <!-- TC 10 -->
+    <div class="tc-title"><span class="icon">🔹</span> Test Case 10 – Final Evaluation Formatting for Tracking System</div>
+    <div class="tc-card">
+        <div class="tc-row">
+            <div class="tc-label">Test Case ID</div>
+            <div class="tc-value">TC_Eval_02</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Module</div>
+            <div class="tc-value">HR Applicant Tracking System</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Scenario</div>
+            <div class="tc-value">Verify that the Final HR Data Output renders the evaluation objects clearly inside the designated UI Viewers</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Test Steps</div>
+            <div class="tc-value">
+                <ol>
+                    <li>HR clicks onto the Candidate Profile Panel</li>
+                    <li>Navigates to the Evaluation Output tab container</li>
+                    <li>Backend queries matching metrics by InterviewId Key</li>
+                </ol>
+            </div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Expected Result</div>
+            <div class="tc-value">Quantitative Technical Score is displayed perfectly within the KPI UI. Human-readable AI feedbacks dynamically span into the rigid text container organically.</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Actual Result</div>
+            <div class="tc-value">As expected</div>
+        </div>
+        <div class="tc-row">
+            <div class="tc-label">Status</div>
+            <div class="tc-value">Pass</div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

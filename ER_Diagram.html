@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ER Diagram</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        // Define theme variables to match the MS Visio style from screenshot
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'default',
+            er: {
+                diagramPadding: 20,
+                layoutDirection: "TB",
+                minEntityWidth: 200,
+                minEntityHeight: 75,
+                entityPadding: 15,
+                stroke: "black",
+                fill: "white"
+            }
+        });
+    </script>
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            background-color: #fefefe;
+            font-family: Arial, sans-serif;
+        }
+        .mermaid {
+            transform: scale(1.1); /* Zoom slightly for screenshot */
+        }
+        /* CSS to ensure boxes are black and white like the reference */
+        .er.entityBox {
+            fill: #ffffff !important;
+            stroke: #000000 !important;
+            stroke-width: 1.5px !important;
+        }
+        .er.attributeBoxOdd, .er.attributeBoxEven {
+            fill: #ffffff !important;
+            stroke: #000000 !important;
+            stroke-width: 1px !important;
+        }
+        .er.entityLabel, .er.attributeName, .er.attributeType {
+            fill: #000000 !important;
+            font-size: 14px !important;
+        }
+        .er.relationshipLine {
+            stroke: #000000 !important;
+            stroke-width: 1.5px !important;
+        }
+        text.er.relationshipLabel {
+            fill: #000000 !important;
+            font-size: 12px !important;
+            background-color: white !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="mermaid">
+erDiagram
+    %% Entities mapped directly to your FastAPI Models & MongoDB Collections
+
+    User {
+        VARCHAR(24) U_ID PK
+        VARCHAR(50) U_Email
+        VARCHAR(255) U_Password
+        VARCHAR(15) Role
+        DATETIME Created_At
+    }
+    
+    JobDescription {
+        VARCHAR(24) JD_ID PK
+        VARCHAR(24) HR_ID FK
+        VARCHAR(100) Job_Title
+        TEXT Requirements
+        JSON Required_Skills
+        DATETIME Posted_At
+    }
+    
+    CandidateProfile {
+        VARCHAR(24) CP_ID PK
+        VARCHAR(24) U_ID FK
+        VARCHAR(60) Full_Name
+        TEXT Resume_Raw_Text
+        JSON Extracted_Skills
+        FLOAT Exp_Years
+    }
+    
+    InterviewRoom {
+        VARCHAR(24) Int_ID PK
+        VARCHAR(24) CP_ID FK
+        VARCHAR(24) JD_ID FK
+        JSON Technical_Questions
+        VARCHAR(20) Status
+        FLOAT Pre_Score
+    }
+    
+    AIEvaluation {
+        VARCHAR(24) Eval_ID PK
+        VARCHAR(24) Int_ID FK
+        FLOAT Final_Score
+        TEXT Feedback_Report
+    }
+
+    %% Crow's Foot Relationships showing cardinalities
+    
+    User ||--o{ JobDescription : "creates (1 to Many)"
+    User ||--|| CandidateProfile : "owns (1 to 1)"
+    
+    CandidateProfile ||--o{ InterviewRoom : "takes (1 to Many)"
+    JobDescription ||--o{ InterviewRoom : "conducts for (1 to Many)"
+    
+    InterviewRoom ||--|| AIEvaluation : "produces (1 to 1)"
+</div>
+
+</body>
+</html>

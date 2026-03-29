@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Types of Testing</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: #fdfdfd; 
+            padding: 50px; 
+            display: flex;
+            justify-content: center;
+        }
+        .table-container { 
+            background: white; 
+            border: 1px solid #eef0f2; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 18px rgba(0,0,0,0.03); 
+            width: 100%;
+            max-width: 1000px;
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 24px 30px;
+            font-size: 14.5px;
+            color: #333;
+            line-height: 1.5;
+        }
+        th {
+            font-weight: 600;
+            color: #111;
+            font-size: 15px;
+            border-bottom: 1px solid #eef0f2;
+            padding-bottom: 16px;
+        }
+        td {
+            border-bottom: 1px solid #f2f2f2;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        td:nth-child(1) {
+            color: #444;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Test Type</th>
+                    <th>Tools/Method</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Unit Testing</td>
+                    <td>PyTest / Jest</td>
+                    <td>Tested isolated Python logic functions and React modular components independently.</td>
+                </tr>
+                <tr>
+                    <td>Integration Testing</td>
+                    <td>Postman, FastAPI Swagger UI</td>
+                    <td>Verified secure REST API endpoint communication and MongoDB driver logic.</td>
+                </tr>
+                <tr>
+                    <td>Manual UI Testing</td>
+                    <td>Browser-based manual walkthrough</td>
+                    <td>Thoroughly tested UI dashboard navigation, strict form validation, and component rendering.</td>
+                </tr>
+                <tr>
+                    <td>Database Testing</td>
+                    <td>MongoDB Compass</td>
+                    <td>Visually verified NoSQL data consistency, BSON document integrity, and CRUD operations.</td>
+                </tr>
+                <tr>
+                    <td>AI / Algorithm Testing</td>
+                    <td>Payload Stress Testing Protocol</td>
+                    <td>Tested the absolute accuracy of the Generative AI NLP parser and Auto-Grader engine reliability.</td>
+                </tr>
+                <tr>
+                    <td>UAT (User Acceptance)</td>
+                    <td>Simulated execution iteratively</td>
+                    <td>Final platform validation explicitly assuming the simulated roles of HR Recruiter and Candidate.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

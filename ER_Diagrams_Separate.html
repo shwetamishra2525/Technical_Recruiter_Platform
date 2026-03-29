@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Module ER Diagrams</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'default'
+        });
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: white; color: black; padding: 40px; }
+        .diagram-container { 
+            margin: 0 auto 60px auto; 
+            border: 1px solid #ddd; 
+            padding: 40px; 
+            text-align: center; 
+            max-width: 900px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            background-color: #fafafa;
+        }
+        h2 { color: #333; margin-bottom: 20px; font-size: 20px;}
+        .mermaid { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+    <div class="diagram-container">
+        <h2>1. Identity & Security Governance ER Diagram</h2>
+        <div class="mermaid">
+        erDiagram
+            USERS ||--|{ SYSTEM_AUDIT_LOGS : "Logs"
+            USERS ||--o{ JWT_BLACKLIST : "Revokes"
+            USERS ||--o{ EMAIL_DISPATCHES : "Notifies"
+            
+            USERS {
+                ObjectId UserId PK
+                String FullName
+                String EmailAddress
+                String PasswordHash
+                Enum Role
+            }
+            
+            SYSTEM_AUDIT_LOGS {
+                ObjectId LogId PK
+                ObjectId UserId FK
+                Enum ActionType
+                DateTime Timestamp
+            }
+            
+            JWT_BLACKLIST {
+                ObjectId TokenId PK
+                ObjectId UserId FK
+                DateTime RevokedAt
+            }
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>2. HR Applicant Tracking System (ATS) ER Diagram</h2>
+        <div class="mermaid">
+        erDiagram
+            JOB_DESCRIPTIONS ||--|{ JOB_REQUIRED_SKILLS : "Requires"
+            JOB_DESCRIPTIONS ||--o{ JOB_ENGAGEMENT_METRICS : "Metrics"
+            JOB_DESCRIPTIONS ||--o{ APPLICATIONS : "Receives"
+            APPLICATIONS ||--|{ APP_STATUS_HISTORY : "Updates"
+            APPLICATIONS ||--|| ALGORITHM_MATCH_SCORES : "Calculates"
+            
+            JOB_DESCRIPTIONS {
+                ObjectId JobId PK
+                ObjectId CreatedByHR FK
+                String JobTitle
+                Boolean IsHiringActive
+            }
+            
+            APPLICATIONS {
+                ObjectId ApplicationId PK
+                ObjectId JobId FK
+                ObjectId CandidateId FK
+                Enum CurrentStatus
+            }
+            
+            ALGORITHM_MATCH_SCORES {
+                ObjectId ScoreId PK
+                ObjectId ApplicationId FK
+                Float FinalPercentage
+            }
+        </div>
+    </div>
+    
+    <div class="diagram-container">
+        <h2>3. Candidate Portfolio ER Diagram</h2>
+        <div class="mermaid">
+        erDiagram
+            USERS ||--|| CANDIDATE_PROFILES : "Owns"
+            CANDIDATE_PROFILES ||--o{ WORK_EXPERIENCE : "Has"
+            CANDIDATE_PROFILES ||--o{ EDUCATION_HISTORY : "Has"
+            CANDIDATE_PROFILES ||--|| RESUME_PARSE_METADATA : "Parses"
+            
+            CANDIDATE_PROFILES {
+                ObjectId ProfileId PK
+                ObjectId UserId FK
+                String ResumeS3Url
+                Float ExperienceYears
+            }
+            
+            WORK_EXPERIENCE {
+                ObjectId ExperienceId PK
+                ObjectId CandidateId FK
+                String RoleTitle
+            }
+            
+            RESUME_PARSE_METADATA {
+                ObjectId ParseId PK
+                ObjectId CandidateId FK
+                Integer TokensUtilized
+                Float Confidence
+            }
+        </div>
+    </div>
+    
+    <div class="diagram-container">
+        <h2>4. Live AI Intelligent Evaluation ER Diagram</h2>
+        <div class="mermaid">
+        erDiagram
+            INTERVIEW_SESSIONS ||--|{ DYNAMIC_AI_QUESTIONS : "Fetches"
+            DYNAMIC_AI_QUESTIONS ||--|{ CANDIDATE_CODE_SUBMISSIONS : "Answers"
+            INTERVIEW_SESSIONS ||--|| AI_EVALUATIONS : "Generates"
+            AI_EVALUATIONS ||--|| AI_FEEDBACK_REPORTS : "Explains"
+            
+            INTERVIEW_SESSIONS {
+                ObjectId InterviewId PK
+                ObjectId ApplicationId FK
+                DateTime SessionStart
+            }
+            
+            DYNAMIC_AI_QUESTIONS {
+                ObjectId QuestionId PK
+                ObjectId InterviewId FK
+                String ProblemStatement
+            }
+            
+            AI_EVALUATIONS {
+                ObjectId EvaluationId PK
+                ObjectId InterviewId FK
+                Float FinalTechnicalScore
+            }
+        </div>
+    </div>
+
+</body>
+</html>

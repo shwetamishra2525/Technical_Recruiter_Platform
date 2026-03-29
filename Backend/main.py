@@ -3,20 +3,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes import router
 import uvicorn
 import os
+from fastapi.staticfiles import StaticFiles
+
+# Ensure uploads directory exists
+os.makedirs("uploads", exist_ok=True)
 
 app = FastAPI(title="AI Recruiter API")
 
-# CORS
-origins = [
-    "http://localhost:5173", # Vite default
-    "http://localhost:3000",
-    "http://127.0.0.1:5173",
-]
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -1,0 +1,16 @@
+# Backend
+Backend/.env
+Backend/__pycache__/
+Backend/*.pyc
+
+# Frontend
+Frontend/technical_recruitement_platform/node_modules/
+Frontend/technical_recruitement_platform/dist/
+Frontend/technical_recruitement_platform/.env
+Frontend/technical_recruitement_platform/build/
+
+# General
+.DS_Store
+*.log
+.vscode/
+.idea/

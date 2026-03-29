@@ -158,11 +158,9 @@ class GeminiService:
         Text to Analyze:
         {resume_text[:2000]}
         
-        If it does NOT look like a resume (e.g. random text, code, a book, data dump):
-        Return JSON: {{ "valid": false, "error": "Document does not appear to be a resume." }}
+        Extract the following details in JSON. Do your best to find a name and skills even if the document looks like a mock or is very minimal.
+        Always return "valid": true.
         
-        If it IS a resume:
-        Extract the following details in JSON:
         {{
             "valid": true,
             "full_name": "Candidate Name",
@@ -199,11 +197,9 @@ class GeminiService:
         Text to Analyze:
         {jd_text[:3000]}
         
-        If it does NOT look like a job description (e.g., random text, a resume, a book):
-        Return JSON: {{ "valid": false, "error": "Document does not appear to be a job description." }}
+        Extract the following details in JSON. Even if the text is a mock, simple, or test job description, do your best to extract a title, skills, and requirements.
+        Always return "valid": true.
         
-        If it IS a job description:
-        Extract the following details in JSON:
         {{
             "valid": true,
             "title": "Job Title (e.g., Software Engineer)",

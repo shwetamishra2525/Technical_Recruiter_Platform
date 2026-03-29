@@ -1,0 +1,114 @@
+Immediate Joiner Required.*
+
+Position Summary:The Clinical Data Manager (CDM) is to be the subject matter expert pertaining to eCRF design, data management guidelines, and database creation. The CDM will be responsible for all clinical data management activities in compliance with Standard Operating Procedures (SOPs) and current industry/regulatory guidelines.
+
+The CDM serves as the technical leader on all aspects of the study, is the primary contact point for client and vendor communication, and must independently manage the study from start up through database lock, As such, the individuals that we are interviewing should have, at a minimum:
+
+Excellent knowledge of all standard DM documents, including but not limited to DMP, DVP, CCG/DEG, DTS, all types of specs.
+
+Excellent knowledge of all DM process including start-up, maintenance, and completion activities.
+
+Excellent knowledge of eCRF design.
+
+In-depth understanding of database structures and database programming.
+
+In depth knowledge of CDISC CDASH standards.
+
+In-depth knowledge of clinical trial processes and experience in ICH, GCP, and GCDMP (SCDM).
+
+The proven ability to provide leadership and think strategically to achieve business goals.
+
+Strong analytical, problem solving, and technical skills in database programming.
+
+Strong organizational, planning, and time management skills with the ability to multitask under tight deadlines while providing attention to detail.
+
+Excellent communication skills
+
+Responsibilities:
+
+EDC System knowledge
+
+Experience Required: Independently managed end-to-end delivery of data management services for single/multi-service projects, ensuring quality deliverables on time and within budget, to customer satisfaction.
+
+Clinical Data Manager/Supervisor Data Management
+
+Independently performed all activities related to data management per regulations and
+applicable standard operating procedures (SOPs).
+
+Guided the junior members of the data management group.
+
+Managed the process from DMP development to data entry, data cleaning in and data
+transfer, data lock to data export as required and led the execution of all plans.
+
+Designed, maintained, monitored and locked Phase I Clinical Trial databases (eCRF pages)
+including First- in-human, Pharmacokinetics & Metabolism, Pharmacodynamics, Dose-
+Ranging (Single Ascending Dose, Multiple Ascending Dose), Safety & Tolerability, Studies
+using different EDC systems.
+
+Created and validated SAS programs for Data validation, CDISC; SDTM, ADaM, and
+Define-XML.
+
+Supervised and scheduled Data Management Associates and ensured lock activities
+according to agreed timelines, budget, and quality requirements.
+
+Skill:
+
+eCRF design (Expert, Mandatory)
+
+Clinical Data Management (Expert, Mandatory)
+
+Data Manager Process (Expert, Mandatory)
+
+CDISC CDASH Standards (Expert, Mandatory)
+
+Experience:
+
+5 - 7 Years
+
+Salary:
+
+[phone number]- [phone number]PA
+
+Work Location:
+
+Remote (Work From Home)
+
+No of Interviews:
+
+1
+
+Qualification:
+
+Bachelor's
+
+Job Type:
+
+Permanent Full Time
+
+Industry:
+
+IT Software & Services
+
+Note:- Candidates must have the experience of Data Manager Process knowledge that we need to fill the role of Clinical Data Manager role. We need to find someone who has knowledge of all aspects of data management. We need to focus on Data Manager candidates, not Data Analyst or not Data Specialist or not Data Coordinator or not Data Associate candidates.
+
+Job Types: Full-time, Regular / Permanent
+
+Salary: ₹1,000,000.00 - ₹1,800,000.00 per year
+
+Schedule:
+Day shift
+Morning shift
+
+
+
+Application Question(s):
+Do you have experience in eCRF design?
+Do you have experience in Clinical Data Management?
+Do you have experience in Data Manager Process?
+Do you have experience in CDISC CDASH Standards?
+
+Experience:
+total work: 5 years (Required)
+
+
+Speak with the [phone number]

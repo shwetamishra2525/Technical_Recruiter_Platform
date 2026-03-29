@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Use Case Diagram</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            background-color: #fefefe;
+            font-family: Arial, sans-serif;
+        }
+        .mermaid {
+            transform: scale(1.2); /* Zoom slightly for clear screenshots */
+        }
+    </style>
+</head>
+<body>
+
+<div class="mermaid">
+flowchart LR
+    %% Styling Definitions
+    classDef actor fill:transparent,stroke:none,color:black,font-weight:bold,font-size:18px;
+    classDef usecase fill:white,stroke:#333,stroke-width:1.5px,color:black,font-size:15px;
+
+    %% Actors
+    HR["🧑‍💼<br/>HR/Recruiter"]:::actor
+    Candidate["🧑‍💻<br/>Candidate"]:::actor
+    
+    %% The System Boundary
+    subgraph System ["Technical Recruiter Platform"]
+        direction TB
+        
+        UC1(["Register"]):::usecase
+        UC2(["Login"]):::usecase
+        UC3(["Create Job Description"]):::usecase
+        UC4(["Upload Resume"]):::usecase
+        UC5(["Manage Applicants"]):::usecase
+        UC6(["Take AI Interview"]):::usecase
+        UC7(["View AI Evaluation"]):::usecase
+    end
+    
+    %% Connections from HR (Left side)
+    HR --- UC1
+    HR --- UC2
+    HR --- UC3
+    HR --- UC5
+    HR --- UC7
+    
+    %% Connections from Candidate (Right side)
+    UC1 --- Candidate
+    UC2 --- Candidate
+    UC4 --- Candidate
+    UC6 --- Candidate
+    UC7 --- Candidate
+    
+    %% Includes relationships mapping back to Login 
+    %% (Dotted arrows)
+    UC3 -. "«include»" .-> UC2
+    UC4 -. "«include»" .-> UC2
+    UC5 -. "«include»" .-> UC2
+    UC6 -. "«include»" .-> UC2
+    UC7 -. "«include»" .-> UC2
+
+</div>
+
+</body>
+</html>

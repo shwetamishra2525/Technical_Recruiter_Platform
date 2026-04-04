@@ -593,8 +593,12 @@ async def start_interview(jd_id: str, current_user: dict = Depends(get_current_u
     )
     
     if existing_interview:
-        if existing_interview.get("status") in ["Approved", "Reject", "completed"]:
+        status = existing_interview.get("status", "").lower()
+        if status in ["approved", "completed"]:
             raise HTTPException(status_code=400, detail="You have already completed the application for this role.")
+        elif status == "reject":
+            # Candidate was rejected previously, simply ignore the old record and let them take a fresh new test
+            pass
         else:
             # It's pending, let them resume it instead of creating a duplicate
             return {"interview_id": str(existing_interview["_id"]), "questions": existing_interview.get("questions", [])}

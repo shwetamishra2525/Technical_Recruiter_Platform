@@ -279,7 +279,6 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     # 4. Interviews (Listing ONLY applications for this HR's JDs)
     interviews_cursor = interviews_collection.find(interview_query).sort("created_at", pymongo.DESCENDING).limit(500)
     applications_list = []
-    seen_applications = set() # candidate_id + jd_id
     
     unique_total = 0
     unique_ready = 0
@@ -288,14 +287,9 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     async for interview in interviews_cursor:
         candidate_id = str(interview.get("candidate_id", ""))
         jd_id = str(interview.get("jd_id", ""))
-        unique_key = f"{candidate_id}_{jd_id}"
+        # Removed deduplication to ensure all applications/attempts are visible to HR as requested
         
-        # Keep only the newest submission for a given candidate-job pair
-        if unique_key in seen_applications:
-            continue
-        seen_applications.add(unique_key)
-        
-        # Calculate deduplicated KPIs
+        # Calculate KPIs
         unique_total += 1
         status = interview.get("status", "New")
         if status == "completed":
@@ -303,13 +297,30 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
         elif status in ["Approved", "Reject"]:
             unique_finished += 1
         
-        candidate = await candidates_collection.find_one({"_id": ObjectId(interview["candidate_id"])})
-        jd = await jds_collection.find_one({"_id": ObjectId(interview["jd_id"])})
+        try:
+            cand_id_obj = ObjectId(interview["candidate_id"])
+        except Exception:
+            cand_id_obj = None
+            
+        try:
+            jd_id_obj = ObjectId(interview["jd_id"])
+        except Exception:
+            jd_id_obj = None
+
+        candidate = await candidates_collection.find_one({"_id": cand_id_obj}) if cand_id_obj else None
+        jd = await jds_collection.find_one({"_id": jd_id_obj}) if jd_id_obj else None
         
+        # Use the name snapped at the time of the test if multiple users share an account
+        candidate_name = interview.get("candidate_name")
+        if not candidate_name and candidate:
+            candidate_name = candidate.get("full_name", "Unknown Applicant")
+        elif not candidate_name:
+            candidate_name = "Deleted Candidate"
+            
         applications_list.append({
             "id": str(interview["_id"]), # Navigation now happens via interview_id
             "candidate_id": str(candidate["_id"]) if candidate else None,
-            "name": candidate.get("full_name") if candidate else "Deleted Candidate",
+            "name": candidate_name,
             "role": jd.get("title") if jd else "General Applicant",
             "score": interview.get("total_score", 0),
             "status": status,
@@ -422,31 +433,7 @@ async def get_candidate_profile(current_user: dict = Depends(get_current_user)):
 
 # --- Candidate Routes ---
 
-async def check_application_status(user_id: str):
-    """
-    Checks the status of the latest interview for a user.
-    Returns an error message if they are blocked from applying.
-    """
-    candidate = await candidates_collection.find_one({"user_id": user_id})
-    if not candidate:
-        return None # No candidate profile yet, can upload
-    
-    import pymongo
-    latest_interview = await interviews_collection.find_one(
-        {"candidate_id": str(candidate["_id"])},
-        sort=[("created_at", pymongo.DESCENDING)]
-    )
-    
-    if not latest_interview:
-        return None # No interview started yet, can upload or start
-    
-    status = latest_interview.get("status")
-    if status == "Approved":
-        return "User is already approved. You cannot apply again."
-    elif status == "completed":
-        return "Waiting for response. You have an active application under review."
-    
-    return None # Rejected or New? Let them re-apply for now.
+
 
 @router.post("/candidate/upload-resume")
 async def upload_resume(
@@ -455,11 +442,6 @@ async def upload_resume(
 ):
     if current_user["role"] != "candidate":
         raise HTTPException(status_code=403, detail="Only candidates can upload resumes")
-    
-    # Check if they are allowed to apply
-    status_msg = await check_application_status(current_user["id"])
-    if status_msg:
-        raise HTTPException(status_code=403, detail=status_msg)
     
     # Read file content
     content = await file.read()
@@ -582,21 +564,16 @@ async def get_all_jobs(current_user: dict = Depends(get_current_user)):
                     job["match_score"] = matched_jds_cache[job_id].get("match_score", 0)
                     job["match_reason"] = matched_jds_cache[job_id].get("reason", "")
             
-            # 5. Sort by Score
+            # 5. Sort by Score (Descending). Since Python sort is stable, newer JDs naturally bubble up on ties.
             jobs.sort(key=lambda x: x.get("match_score", 0), reverse=True)
             
-            # 6. Top 3 results
+            # 6. Top 3 results as requested
             jobs = jobs[:3]
             
     return jobs
 
 @router.post("/candidate/start-interview/{jd_id}")
 async def start_interview(jd_id: str, current_user: dict = Depends(get_current_user)):
-    # Check if they are allowed to apply
-    status_msg = await check_application_status(current_user["id"])
-    if status_msg:
-        raise HTTPException(status_code=403, detail=status_msg)
-
     candidate = await candidates_collection.find_one({"_id": current_user["id"]}) # wait it's user_id or _id, let's fix the query to find by user_id
     if not candidate:
         candidate = await candidates_collection.find_one({"user_id": current_user["id"]})
@@ -627,6 +604,7 @@ async def start_interview(jd_id: str, current_user: dict = Depends(get_current_u
     
     interview_data = InterviewModel(
         candidate_id=str(candidate["_id"]),
+        candidate_name=candidate.get("full_name", "Unknown Applicant"),
         jd_id=jd_id,
         questions=[{"question": q, "answer": "", "score": 0} for q in questions],
         status="pending"

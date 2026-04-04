@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Your resume primarily showcases extensive experience in AI/ML development. Could you elaborate on what specifically attracted you to this DevOps Engineer role, and how you see your current skills and experience aligning with responsibilities such as designing CI/CD pipelines, managing infrastructure as code, and ensuring system resilience?",
+    "answer": "fgffg",
+    "score": 0,
+    "feedback": "The answer 'fgffg' is completely unintelligible and provides no relevant information. It does not address any part of the complex question regarding attraction to the role or alignment of skills."
+  },
+  {
+    "question": "The job description highlights designing and maintaining robust CI/CD pipelines. While your resume mentions CI/CD in your skills, could you describe a complex CI/CD pipeline you've designed or significantly contributed to, detailing the tools used (e.g., Jenkins, GitLab CI/CD), the stages involved, and how you ensured its reliability and security?",
+    "answer": "gfffffff",
+    "score": 0,
+    "feedback": "The answer 'gfffffff' is nonsensical and fails to provide any details about CI/CD pipeline design, tools used, stages involved, or how reliability and security were ensured, as requested by the question."
+  },
+  {
+    "question": "You've listed Docker in your skills. Can you explain your practical experience with Docker beyond basic usage, and describe your familiarity with container orchestration platforms like Kubernetes, especially regarding deploying, scaling, and managing multi-service applications in a production environment?",
+    "answer": "rtr",
+    "score": 0,
+    "feedback": "The answer 'rtr' is meaningless and does not demonstrate any practical experience with Docker beyond basic usage or familiarity with container orchestration platforms like Kubernetes. It completely misses the point of the question."
+  },
+  {
+    "question": "This role heavily involves managing cloud infrastructure using Infrastructure as Code (IaC) and monitoring system performance. What is your experience with specific IaC tools (e.g., Terraform, Ansible) for provisioning and managing cloud resources? Also, how do you typically approach monitoring the health, performance, and security of deployed applications and infrastructure?",
+    "answer": "trtr",
+    "score": 0,
+    "feedback": "The answer 'trtr' is unintelligible and provides no information about experience with IaC tools (e.g., Terraform, Ansible) or approaches to monitoring system health, performance, and security. It is entirely irrelevant."
+  },
+  {
+    "question": "Strong scripting skills in Bash and Python, along with Linux administration, are essential for this position. While you are proficient in Python, can you describe a scenario where you've used scripting (either Python or Bash) to automate a deployment task, perform system administration, or troubleshoot an issue on a Linux environment? How comfortable are you with common Linux commands and system-level troubleshooting?",
+    "answer": "ff",
+    "score": 0,
+    "feedback": "The answer 'ff' is completely uninformative and fails to describe any scripting scenario for automation or system administration, nor does it assess comfort with Linux commands and troubleshooting. It provides no value."
+  }
+]

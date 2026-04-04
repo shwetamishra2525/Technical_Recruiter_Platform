@@ -56,6 +56,7 @@ class CandidateProfileModel(BaseModel):
 class InterviewModel(BaseModel):
     id: Optional[PyObjectId] = Field(None, alias="_id")
     candidate_id: str
+    candidate_name: Optional[str] = None  # Snapshot of the name at interview time
     jd_id: str
     questions: List[dict] = [] # List of {question: str, answer: str, score: int}
     total_score: float = 0

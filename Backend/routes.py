@@ -109,7 +109,7 @@ async def upload_user_photo(file: UploadFile = File(...), current_user: dict = D
     with open(file_location, "wb+") as file_object:
         shutil.copyfileobj(file.file, file_object)
         
-    photo_url = f"http://localhost:8000/uploads/{filename}"
+    photo_url = f"/uploads/{filename}"
     await users_collection.update_one(
         {"_id": ObjectId(current_user["id"])},
         {"$set": {"photo_url": photo_url}}

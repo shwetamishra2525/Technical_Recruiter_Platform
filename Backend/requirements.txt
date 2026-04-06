@@ -9,6 +9,6 @@ pydantic-settings
 python-dotenv
 passlib[bcrypt]
 email-validator
-pymupdf
+PyPDF2
 aiosmtplib
 mangum

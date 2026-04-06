@@ -7,7 +7,7 @@ from ai_service import gemini_service
 from services.mail_service import send_status_email
 from bson import ObjectId
 from difflib import SequenceMatcher
-import fitz # PyMuPDF
+import PyPDF2
 
 router = APIRouter()
 
@@ -215,9 +215,10 @@ async def upload_jd(
     try:
         filename_lower = file.filename.lower()
         if filename_lower.endswith(".pdf"):
-            with fitz.open(stream=content, filetype="pdf") as doc:
-                for page in doc:
-                    text_content += page.get_text()
+            import io
+            reader = PyPDF2.PdfReader(io.BytesIO(content))
+            for page in reader.pages:
+                text_content += (page.extract_text() or "") + "\n"
         elif filename_lower.endswith(".docx"):
             import docx
             import io
@@ -452,9 +453,10 @@ async def upload_resume(
     try:
         filename_lower = file.filename.lower()
         if filename_lower.endswith(".pdf"):
-            with fitz.open(stream=content, filetype="pdf") as doc:
-                for page in doc:
-                    text_content += page.get_text()
+            import io
+            reader = PyPDF2.PdfReader(io.BytesIO(content))
+            for page in reader.pages:
+                text_content += (page.extract_text() or "") + "\n"
         elif filename_lower.endswith(".docx"):
             import docx
             import io

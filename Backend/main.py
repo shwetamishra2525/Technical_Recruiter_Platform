@@ -6,13 +6,14 @@ import os
 from fastapi.staticfiles import StaticFiles
 from mangum import Mangum
 
-# Ensure uploads directory exists
-os.makedirs("uploads", exist_ok=True)
+# Ensure uploads directory exists in /tmp
+UPLOAD_DIR = "/tmp/uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 app = FastAPI(title="AI Recruiter API")
 
-# Mount StaticFiles (Note: Vercel storage is ephemeral)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+# Mount StaticFiles from /tmp (Note: Vercel storage is ephemeral)
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # CORS
 app.add_middleware(

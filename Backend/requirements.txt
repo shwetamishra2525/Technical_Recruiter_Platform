@@ -9,8 +9,6 @@ pydantic-settings
 python-dotenv
 passlib[bcrypt]
 email-validator
-pandas
-scikit-learn
 pymupdf
 aiosmtplib
 mangum

@@ -100,11 +100,12 @@ async def update_user_profile(profile_data: dict, current_user: dict = Depends(g
 async def upload_user_photo(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
     import shutil
     import os
-    os.makedirs("uploads", exist_ok=True)
+    UPLOAD_DIR = "/tmp/uploads"
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
     
     file_extension = file.filename.split(".")[-1]
     filename = f"{current_user['id']}_profile.{file_extension}"
-    file_location = f"uploads/{filename}"
+    file_location = f"{UPLOAD_DIR}/{filename}"
     
     with open(file_location, "wb+") as file_object:
         shutil.copyfileobj(file.file, file_object)

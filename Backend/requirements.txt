@@ -12,3 +12,5 @@ email-validator
 PyPDF2
 aiosmtplib
 mangum
+certifi
+python-docx

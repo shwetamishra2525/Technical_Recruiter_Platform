@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-motor
+motor[srv]
 pyjwt
 google-generativeai
 python-multipart
@@ -14,3 +14,4 @@ aiosmtplib
 mangum
 certifi
 python-docx
+dnspython
